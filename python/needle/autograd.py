@@ -396,10 +396,21 @@ def compute_gradient_of_variables(output_tensor, out_grad):
 
     # Traverse graph in reverse topological order given the output_node that we are taking gradient wrt.
     reverse_topo_order = list(reversed(find_topo_sort([output_tensor])))
-
-    ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
-    ### END YOUR SOLUTION
+    for node in reverse_topo_order:
+        node.grad = sum_node_list(node_to_output_grads_list[node])
+        if node.op is None:
+            # in what case node.op is None ?
+            # leaf node has no op
+            continue
+        partial_adjoints = node.op.gradient(node.grad, node)
+        if not isinstance(partial_adjoints, tuple):
+            partial_adjoints = [partial_adjoints]
+        assert len(node.inputs) <= len(partial_adjoints)
+        for i in range(len(node.inputs)):
+            if node.inputs[i] not in node_to_output_grads_list:
+                node_to_output_grads_list[node.inputs[i]] = [partial_adjoints[i]]
+            else:
+                node_to_output_grads_list[node.inputs[i]].append(partial_adjoints[i])
 
 
 def find_topo_sort(node_list: List[Value]) -> List[Value]:
