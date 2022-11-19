@@ -410,16 +410,29 @@ def find_topo_sort(node_list: List[Value]) -> List[Value]:
     after all its predecessors are traversed due to post-order DFS, we get a topological
     sort.
     """
-    ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
-    ### END YOUR SOLUTION
+    ### trace of computational graph (construct computational graph)
+    ### Return forward topo sort because ndl can trace every value's inputs
+    ### (见 数据结构与算法之美 拓扑排序 2.DFS算法)
+    visited = set()
+    forward_node_list = []
+    for node in node_list:
+        if node in visited:
+            continue
+        else:
+            visited.add(node)
+            topo_sort_dfs(node, visited, forward_node_list)
+    return forward_node_list
 
 
 def topo_sort_dfs(node, visited, topo_order):
     """Post-order DFS"""
-    ### BEGIN YOUR SOLUTION
-    raise NotImplementedError()
-    ### END YOUR SOLUTION
+    for pre_node in node.inputs:
+        if pre_node in visited:
+            continue
+        else:
+            visited.add(pre_node)
+            topo_sort_dfs(pre_node, visited, topo_order)
+    topo_order.append(node)
 
 
 ##############################
